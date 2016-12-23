@@ -20,6 +20,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -51,17 +52,43 @@ public class FABRevealLayout extends RelativeLayout {
         }
     };
 
+    private boolean alignParentTop, alignParentBottom, alignParentLeft, alignParentRight;
+    private boolean alignParentStart, alignParentEnd;
+    private boolean centerInParent, centerHorizontal, centerVertical;
+
+    private int mMargin = -1;
+    private int mTopMargin = -1;
+    private int mBottomMargin = -1;
+    private int mLeftMargin = -1;
+    private int mRightMargin = -1;
+
     public FABRevealLayout(Context context) {
         this(context, null);
     }
 
     public FABRevealLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        initAttrs(context, attrs);
     }
 
     public FABRevealLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initAttrs(context, attrs);
         childViews = new ArrayList<>(2);
+    }
+
+    private void initAttrs(Context context, AttributeSet attrs) {
+        if (attrs == null) return;
+
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FABRevealLayout);
+        mMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_margin, -1);
+        mTopMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_top_margin, -1);
+        mBottomMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_bottom_margin, -1);
+        mLeftMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_left_margin, -1);
+        mRightMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_right_margin, -1);
+
+
+        typedArray.recycle();
     }
 
     @Override
@@ -136,6 +163,17 @@ public class FABRevealLayout extends RelativeLayout {
         }
         fab.bringToFront();
     }
+
+//    private void setupFABPosition(){
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) fab.getLayoutParams();
+//        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+//        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            params.rightMargin = dipsToPixels(16);
+//            params.topMargin = dipsToPixels(20);
+//        }
+//        fab.bringToFront();
+//    }
 
     private void setupChildViewsPosition(){
         for(int i = 0; i < childViews.size(); i++){

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="FABRevealLayout">
+        <attr name="fab_margin" format="dimension" />
+        <attr name="fab_top_margin" format="dimension" />
+        <attr name="fab_bottom_margin" format="dimension" />
+        <attr name="fab_left_margin" format="dimension" />
+        <attr name="fab_right_margin" format="dimension" />
+
+        <attr name="fab_position">
+            <flag name="align_parent_top" value="10" />
+            <flag name="align_parent_bottom" value="12" />
+            <flag name="align_parent_left" value="9" />
+            <flag name="align_parent_right" value="11" />
+            <flag name="center_in_parent" value="13" />
+            <flag name="center_horizontal" value="14" />
+            <flag name="center_vertical" value="15" />
+            <flag name="align_parent_start" value="20" />
+            <flag name="align_parent_end" value="21" />
+        </attr>
+    </declare-styleable>
+</resources>
