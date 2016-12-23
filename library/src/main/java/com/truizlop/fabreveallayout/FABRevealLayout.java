@@ -222,7 +222,7 @@ public class FABRevealLayout extends RelativeLayout {
     }
 
     private void expandCircle(){
-        Animator expandAnimator = circularExpandingView.expand();;
+        Animator expandAnimator = circularExpandingView.expand();
         expandAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
