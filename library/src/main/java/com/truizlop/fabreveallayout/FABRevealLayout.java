@@ -125,6 +125,7 @@ public class FABRevealLayout extends RelativeLayout {
         setupChildViewsPosition();
     }
 
+    // TODO: Use here to customize position of FAB
     private void setupFABPosition(){
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) fab.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
