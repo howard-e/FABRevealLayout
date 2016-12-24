@@ -14,6 +14,9 @@ A layout to transition between two views using a Floating Action Button as shown
     android:id="@+id/fab_reveal_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/fab_reveal_height"
+    app:fab_position="center_horizontal" <!-- (Optional) "align_top|align_right" by default -->
+    app:fab_right_margin="16dp" <!-- (Optional) "16dp" by default -->
+    app:fab_top_margin="20dp" <!-- (Optional) "20dp" by default -->
     >
 
     <android.support.design.widget.FloatingActionButton
