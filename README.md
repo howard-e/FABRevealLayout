@@ -20,9 +20,9 @@ A layout to transition between two views using a Floating Action Button as shown
     app:fab_bottom_margin="15dp" 
     app:fab_top_margin="15dp"
     >
-    <!-- (Optional) fab_position="align_top|align_right" by default -->
-    <!-- (Optional) fab_right_margin="16dp" by default -->
-    <!-- (Optional) fab_top_margin="20dp" by default -->
+    <!-- (Optional) app:fab_position="align_top|align_right" by default -->
+    <!-- (Optional) app:fab_right_margin="16dp" by default if no margin property exists -->
+    <!-- (Optional) app:fab_top_margin="20dp" by default if no margin property exists -->
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
