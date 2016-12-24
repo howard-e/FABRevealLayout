@@ -25,6 +25,7 @@ import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,15 +53,13 @@ public class FABRevealLayout extends RelativeLayout {
         }
     };
 
-    private boolean alignParentTop, alignParentBottom, alignParentLeft, alignParentRight;
-    private boolean alignParentStart, alignParentEnd;
-    private boolean centerInParent, centerHorizontal, centerVertical;
-
     private int mMargin = -1;
     private int mTopMargin = -1;
     private int mBottomMargin = -1;
     private int mLeftMargin = -1;
     private int mRightMargin = -1;
+
+    private int mGravity = RelativeLayout.ALIGN_PARENT_TOP | ALIGN_PARENT_RIGHT;
 
     public FABRevealLayout(Context context) {
         this(context, null);
@@ -81,12 +80,14 @@ public class FABRevealLayout extends RelativeLayout {
         if (attrs == null) return;
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.FABRevealLayout);
-        mMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_margin, -1);
-        mTopMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_top_margin, -1);
-        mBottomMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_bottom_margin, -1);
-        mLeftMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_left_margin, -1);
-        mRightMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_right_margin, -1);
+        mMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_margin, mMargin);
+        mTopMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_top_margin, mTopMargin);
+        mBottomMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_bottom_margin, mBottomMargin);
+        mLeftMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_left_margin, mLeftMargin);
+        mRightMargin = typedArray.getDimensionPixelSize(R.styleable.FABRevealLayout_fab_right_margin, mRightMargin);
 
+        mGravity = typedArray.getInt(R.styleable.FABRevealLayout_fab_position, mGravity);
+        Log.i("gravity", String.valueOf(mGravity));
 
         typedArray.recycle();
     }
@@ -96,41 +97,41 @@ public class FABRevealLayout extends RelativeLayout {
         setupView(child);
         super.addView(child, index, params);
 
-        if(areAllComponentsReady()){
+        if (areAllComponentsReady()) {
             setupInitialState();
         }
     }
 
     private void setupView(View child) {
-        if(child instanceof FloatingActionButton){
+        if (child instanceof FloatingActionButton) {
             setupFAB(child);
-        }else if(!(child instanceof CircularExpandingView)){
+        } else if (!(child instanceof CircularExpandingView)) {
             setupChildView(child);
         }
     }
 
-    private void setupFAB(View view){
+    private void setupFAB(View view) {
         validateFAB();
         fab = (FloatingActionButton) view;
         fab.setOnClickListener(fabClickListener);
     }
 
-    private void setupChildView(View view){
+    private void setupChildView(View view) {
         validateChildView();
         childViews.add(view);
-        if(childViews.size() == 1){
+        if (childViews.size() == 1) {
             addCircularRevealView();
         }
     }
 
     private void validateFAB() {
-        if(fab != null){
+        if (fab != null) {
             throw new IllegalArgumentException("FABRevealLayout can only hold one FloatingActionButton");
         }
     }
 
     private void validateChildView() {
-        if(childViews.size() >= MAX_CHILD_VIEWS){
+        if (childViews.size() >= MAX_CHILD_VIEWS) {
             throw new IllegalArgumentException("FABRevealLayout can only hold two views");
         }
     }
@@ -143,58 +144,58 @@ public class FABRevealLayout extends RelativeLayout {
         addView(circularExpandingView, params);
     }
 
-    private boolean areAllComponentsReady(){
+    private boolean areAllComponentsReady() {
         return fab != null && childViews.size() == MAX_CHILD_VIEWS;
     }
 
-    private void setupInitialState(){
+    private void setupInitialState() {
         setupFABPosition();
         setupChildViewsPosition();
     }
 
     // TODO: Use here to customize position of FAB
-    private void setupFABPosition(){
+    private void setupFABPosition() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) fab.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            params.rightMargin = dipsToPixels(16);
-            params.topMargin = dipsToPixels(20);
+        params.addRule(mGravity, RelativeLayout.TRUE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (mMargin == -1 && mLeftMargin == -1 && mRightMargin == -1 && mTopMargin == -1 && mBottomMargin == -1) {
+                params.rightMargin = dipsToPixels(16);
+                params.topMargin = dipsToPixels(20);
+            } else if (mMargin != -1) {
+                params.leftMargin = mMargin;
+                params.rightMargin = mMargin;
+                params.topMargin = mMargin;
+                params.bottomMargin = mMargin;
+            } else {
+                if (mLeftMargin != -1) params.leftMargin = mLeftMargin;
+                if (mRightMargin != -1) params.rightMargin = mRightMargin;
+                if (mTopMargin != -1) params.topMargin = mTopMargin;
+                if (mBottomMargin != -1) params.bottomMargin = mBottomMargin;
+            }
         }
         fab.bringToFront();
     }
 
-//    private void setupFABPosition(){
-//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) fab.getLayoutParams();
-//        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-//        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, RelativeLayout.TRUE);
-//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            params.rightMargin = dipsToPixels(16);
-//            params.topMargin = dipsToPixels(20);
-//        }
-//        fab.bringToFront();
-//    }
-
-    private void setupChildViewsPosition(){
-        for(int i = 0; i < childViews.size(); i++){
+    private void setupChildViewsPosition() {
+        for (int i = 0; i < childViews.size(); i++) {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) childViews.get(i).getLayoutParams();
             params.topMargin = dipsToPixels(FAB_SIZE);
         }
         getSecondaryView().setVisibility(GONE);
     }
 
-    private boolean isShowingMainView(){
+    private boolean isShowingMainView() {
         return getMainView().getVisibility() == VISIBLE;
     }
 
-    public void revealMainView(){
-        if(!isShowingMainView()){
+    public void revealMainView() {
+        if (!isShowingMainView()) {
             startHideAnimation();
         }
     }
 
-    public void revealSecondaryView(){
-        if(isShowingMainView()){
+    public void revealSecondaryView() {
+        if (isShowingMainView()) {
             startRevealAnimation();
         }
     }
@@ -203,7 +204,7 @@ public class FABRevealLayout extends RelativeLayout {
         this.onRevealChangeListener = onRevealChangeListener;
     }
 
-    private void startRevealAnimation(){
+    private void startRevealAnimation() {
         View disappearingView = getMainView();
 
         ObjectAnimator fabAnimator = getFABAnimator();
@@ -220,7 +221,7 @@ public class FABRevealLayout extends RelativeLayout {
                 prepareForReveal();
                 expandCircle();
             }
-        } );
+        });
 
         set.start();
     }
@@ -228,8 +229,8 @@ public class FABRevealLayout extends RelativeLayout {
     private void prepareForReveal() {
         circularExpandingView.getLayoutParams().height = getMainView().getHeight();
         circularExpandingView.setColor(fab.getBackgroundTintList() != null ?
-                        fab.getBackgroundTintList().getDefaultColor() :
-                        0xFF000000
+                fab.getBackgroundTintList().getDefaultColor() :
+                0xFF000000
         );
         circularExpandingView.setVisibility(VISIBLE);
     }
@@ -247,19 +248,19 @@ public class FABRevealLayout extends RelativeLayout {
         float toX = view.getWidth() / 2 - fab.getWidth() / 2 + view.getLeft();
         float toY = view.getHeight() / 2 - fab.getHeight() / 2 + view.getTop();
 
-        if(isShowingMainView()) {
+        if (isShowingMainView()) {
             return new CurvedAnimator(fromX, fromY, toX, toY);
-        }else{
+        } else {
             return new CurvedAnimator(toX, toY, fromX, fromY);
         }
     }
 
-    private ObjectAnimator getFABAnimator(){
+    private ObjectAnimator getFABAnimator() {
         CurvedAnimator curvedAnimator = getCurvedAnimator();
         return ObjectAnimator.ofObject(this, "fabPosition", new CurvedPathEvaluator(), curvedAnimator.getPoints());
     }
 
-    private void expandCircle(){
+    private void expandCircle() {
         Animator expandAnimator = circularExpandingView.expand();
         expandAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -271,7 +272,7 @@ public class FABRevealLayout extends RelativeLayout {
         expandAnimator.start();
     }
 
-    private void startHideAnimation(){
+    private void startHideAnimation() {
         Animator contractAnimator = circularExpandingView.contract();
         View disappearingView = getSecondaryView();
         ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(disappearingView, "alpha", 1, 0);
@@ -291,7 +292,7 @@ public class FABRevealLayout extends RelativeLayout {
         set.start();
     }
 
-    private void moveFABToOriginalLocation(){
+    private void moveFABToOriginalLocation() {
         ObjectAnimator fabAnimator = getFABAnimator();
 
         setupAnimationParams(fabAnimator);
@@ -306,18 +307,18 @@ public class FABRevealLayout extends RelativeLayout {
         fabAnimator.start();
     }
 
-    public void setFabPosition(Point point){
+    public void setFabPosition(Point point) {
         fab.setX(point.x);
         fab.setY(point.y);
     }
 
     private void swapViews() {
-        if(isShowingMainView()){
+        if (isShowingMainView()) {
             getMainView().setVisibility(GONE);
             getMainView().setAlpha(1);
             getSecondaryView().setVisibility(VISIBLE);
             circularExpandingView.setVisibility(VISIBLE);
-        }else{
+        } else {
             getMainView().setVisibility(VISIBLE);
             getSecondaryView().setVisibility(GONE);
             getSecondaryView().setAlpha(1);
@@ -326,11 +327,11 @@ public class FABRevealLayout extends RelativeLayout {
         notifyListener();
     }
 
-    private void notifyListener(){
-        if(onRevealChangeListener != null){
-            if(isShowingMainView()){
+    private void notifyListener() {
+        if (onRevealChangeListener != null) {
+            if (isShowingMainView()) {
                 onRevealChangeListener.onMainViewAppeared(this, getMainView());
-            }else{
+            } else {
                 onRevealChangeListener.onSecondaryViewAppeared(this, getSecondaryView());
             }
         }
@@ -344,7 +345,7 @@ public class FABRevealLayout extends RelativeLayout {
         return childViews.get(0);
     }
 
-    private int dipsToPixels(float dips){
+    private int dipsToPixels(float dips) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, getResources().getDisplayMetrics());
     }
 
@@ -353,5 +354,4 @@ public class FABRevealLayout extends RelativeLayout {
         ((MarginLayoutParams) params).topMargin -= dipsToPixels(FAB_SIZE);
         super.setLayoutParams(params);
     }
-
 }
