@@ -153,7 +153,7 @@ public class FABRevealLayout extends RelativeLayout {
         setupChildViewsPosition();
     }
 
-    // TODO: Use here to customize position of FAB
+    // TODO: Allow for backwards compatibility; >= API 16
     private void setupFABPosition() {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) fab.getLayoutParams();
         params.addRule(mGravity, RelativeLayout.TRUE);
